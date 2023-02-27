@@ -27,7 +27,7 @@
         </filter>
     </appender>
 
-    <logger name="com.dmdev" additivity="false">
+    <logger name="ru.mcdev" additivity="false">
         <level value="info"/>
         <appender-ref ref="console"/>
     </logger>
