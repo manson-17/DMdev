@@ -1,10 +1,10 @@
-package org.example;
+package ru.mcdev;
 
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class MockUnitTest {
+public class MockIT {
 
     @Test
     void shouldReturnTrue() {

@@ -1,4 +1,4 @@
-package org.example;
+package ru.mcdev;
 
 import org.junit.jupiter.api.Test;
 
