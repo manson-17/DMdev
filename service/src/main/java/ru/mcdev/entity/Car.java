@@ -15,17 +15,26 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedAttributeNode;
+import javax.persistence.NamedEntityGraph;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 
+
+@NamedEntityGraph(
+        name = "carWithTrips",
+        attributeNodes = {
+                @NamedAttributeNode("trips")
+        }
+)
 @Data
 @Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "registrationNumber")
-public class Car {
+public class Car implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,7 +51,12 @@ public class Car {
     private String registrationNumber;
 
     @Builder.Default
-    @OneToMany(mappedBy = "car", cascade = CascadeType.DETACH)
+    @OneToMany(mappedBy = "car", cascade = CascadeType.REMOVE)
     private List<Trip> trips = new ArrayList<>();
+
+    public void addTrip(Trip trip) {
+        trips.add(trip);
+        trip.setCar(this);
+    }
 
 }

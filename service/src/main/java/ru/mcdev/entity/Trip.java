@@ -1,10 +1,10 @@
 package ru.mcdev.entity;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import ru.mcdev.entity.enums.Status;
 
 import javax.persistence.Entity;
@@ -14,15 +14,15 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.math.BigDecimal;
 
 
 @Data
 @Entity
 @Builder
 @NoArgsConstructor
-@AllArgsConstructor
+@ToString(exclude = {"id", "dispatcher", "driver", "car"})
 @EqualsAndHashCode(exclude = {"id", "dispatcher", "driver", "car"})
 public class Trip extends AuditableEntity<Long> {
 
@@ -37,33 +37,40 @@ public class Trip extends AuditableEntity<Long> {
 
     private String destination;
 
+    private BigDecimal cost;
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "dispatcher_id", referencedColumnName = "id")
     private Dispatcher dispatcher;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "driver_id", referencedColumnName = "id")
     private Driver driver;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "car_id", referencedColumnName = "id")
     private Car car;
 
-    public void setDispatcher(Dispatcher dispatcher) {
+    public void addDispatcher(Dispatcher dispatcher) {
         this.dispatcher = dispatcher;
         this.dispatcher.getTrips().add(this);
     }
 
-    public void setDriver(Driver driver) {
+    public void addDriver(Driver driver) {
         this.driver = driver;
         this.driver.getTrips().add(this);
     }
 
-    public void setCar(Car car) {
+    public void addCar(Car car) {
         this.car = car;
         this.car.getTrips().add(this);
     }
 
-
-
+    public Trip(Long id, Status status, String placeOfDeparture, String destination, BigDecimal cost, Dispatcher dispatcher, Driver driver, Car car) {
+        this.id = id;
+        this.status = status;
+        this.placeOfDeparture = placeOfDeparture;
+        this.destination = destination;
+        this.cost = cost;
+        this.dispatcher = dispatcher;
+        this.driver = driver;
+        this.car = car;
+    }
 }

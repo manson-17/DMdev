@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 import ru.mcdev.entity.enums.Role;
 
 import javax.persistence.Column;
@@ -18,15 +19,17 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 
-@Entity
+
 @Data
-@EqualsAndHashCode(of = "email")
-@ToString(exclude = "role")
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = "role")
+@EqualsAndHashCode(of = "email")
+@Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "type")
-public abstract class Employee implements Comparable<Employee>, BaseEntity<Long> {
+public abstract class Employee implements BaseEntity<Long> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,10 +46,5 @@ public abstract class Employee implements Comparable<Employee>, BaseEntity<Long>
 
     @Enumerated(EnumType.STRING)
     private Role role;
-
-    @Override
-    public int compareTo(Employee o) {
-        return email.compareTo(o.email);
-    }
 
 }

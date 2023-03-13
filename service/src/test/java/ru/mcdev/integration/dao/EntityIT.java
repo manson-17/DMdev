@@ -1,11 +1,5 @@
-package ru.mcdev.integration;
+package ru.mcdev.integration.dao;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import ru.mcdev.entity.Car;
@@ -14,38 +8,10 @@ import ru.mcdev.entity.Driver;
 import ru.mcdev.entity.Trip;
 import ru.mcdev.entity.enums.Status;
 import ru.mcdev.integration.testUtils.EntityUtil;
-import ru.mcdev.integration.testUtils.HibernateTestUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class EntityIT {
-
-    private static SessionFactory sessionFactory;
-    private Session session;
-
-    @BeforeAll
-    static void init() {
-        sessionFactory = HibernateTestUtil.buildSessionFactory();
-
-    }
-
-    @AfterAll
-    static void closeConnection() {
-        sessionFactory.close();
-    }
-
-    @BeforeEach
-    void beginTransaction() {
-        session = sessionFactory.openSession();
-        session.beginTransaction();
-
-    }
-
-    @AfterEach
-    void rollbackTransaction() {
-        session.getTransaction().rollback();
-        session.close();
-    }
+class EntityIT extends BaseIntegrationTest {
 
     @Nested
     class DispatcherTest {
@@ -53,28 +19,34 @@ public class EntityIT {
         Dispatcher dispatcher = EntityUtil.createDispatcher();
 
         @Test
-        public void shouldSave() {
-
-            var actualResult = session.save(dispatcher);
-
-            assertThat(actualResult).isNotNull();
-        }
-
-        @Test
-        public void shouldFind() {
+        void shouldSave() {
 
             session.save(dispatcher);
+            session.flush();
             session.clear();
 
             var actualResult = session.get(Dispatcher.class, dispatcher.getId());
 
-            assertThat(actualResult).isNotNull().isEqualTo(dispatcher);
+            assertThat(actualResult).isEqualTo(dispatcher);
+        }
+
+        @Test
+        void shouldFind() {
+
+            session.save(dispatcher);
+            session.flush();
+            session.clear();
+
+            var actualResult = session.get(Dispatcher.class, dispatcher.getId());
+
+            assertThat(actualResult).isEqualTo(dispatcher);
         }
 
         @Test
         void shouldUpdate() {
 
             session.save(dispatcher);
+            session.flush();
             session.clear();
             var dispatcher1 = session.get(Dispatcher.class, dispatcher.getId());
             dispatcher.setEmail("updateEmail@mail.com");
@@ -84,20 +56,22 @@ public class EntityIT {
             session.clear();
 
             var actualResult = session.get(Dispatcher.class, dispatcher1.getId());
-            assertThat(actualResult.getEmail()).isNotNull().isEqualTo(dispatcher1.getEmail());
+            assertThat(actualResult.getEmail()).isEqualTo(dispatcher1.getEmail());
         }
 
         @Test
         void shouldDelete() {
 
             session.save(dispatcher);
+            session.flush();
             session.clear();
+            var dispatcher1 = session.get(Dispatcher.class, dispatcher.getId());
 
-            session.delete(dispatcher);
+            session.delete(dispatcher1);
             session.flush();
             session.clear();
 
-            var actualResult = session.get(Dispatcher.class, dispatcher.getId());
+            var actualResult = session.get(Dispatcher.class, dispatcher1.getId());
             assertThat(actualResult).isNull();
         }
 
@@ -111,39 +85,32 @@ public class EntityIT {
         @Test
         void shouldSave() {
 
-            var actualResult = session.save(driver);
+            session.save(driver);
+            session.flush();
+            session.clear();
 
-            assertThat(actualResult).isNotNull();
+            var actualResult = session.get(Driver.class, driver.getId());
+
+            assertThat(actualResult).isEqualTo(driver);
         }
 
         @Test
         void shouldFind() {
 
             session.save(driver);
+            session.flush();
             session.clear();
 
             var actualResult = session.get(Driver.class, driver.getId());
 
-            assertThat(actualResult).isNotNull().isEqualTo(driver);
-        }
-
-        @Test
-        void shouldFindAll() {
-
-            var driver1 = Driver.builder().email("driver1@mail.com").build();
-            session.save(driver);
-            session.save(driver1);
-            session.clear();
-
-            var actualResult = session.createQuery("from Driver", Driver.class).getResultList();
-
-            assertThat(actualResult).isNotNull().hasSize(2).contains(driver, driver1);
+            assertThat(actualResult).isEqualTo(driver);
         }
 
         @Test
         void shouldUpdate() {
 
             session.save(driver);
+            session.flush();
             session.clear();
             var driver1 = session.get(Driver.class, driver.getId());
             driver.setEmail("updateEmail@mail.com");
@@ -153,20 +120,22 @@ public class EntityIT {
             session.clear();
 
             var actualResult = session.get(Driver.class, driver1.getId());
-            assertThat(actualResult.getEmail()).isNotNull().isEqualTo(driver1.getEmail());
+            assertThat(actualResult.getEmail()).isEqualTo(driver1.getEmail());
         }
 
         @Test
         void shouldDelete() {
 
             session.save(driver);
+            session.flush();
             session.clear();
+            var driver1 = session.get(Driver.class, driver.getId());
 
-            session.delete(driver);
+            session.delete(driver1);
             session.flush();
             session.clear();
 
-            var actualResult = session.get(Driver.class, driver.getId());
+            var actualResult = session.get(Driver.class, driver1.getId());
             assertThat(actualResult).isNull();
         }
 
@@ -180,26 +149,32 @@ public class EntityIT {
         @Test
         void shouldSave() {
 
-            var actualResult = session.save(car);
+            session.save(car);
+            session.flush();
+            session.clear();
 
-            assertThat(actualResult).isNotNull();
+            var actualResult = session.get(Car.class, car.getId());
+
+            assertThat(actualResult).isEqualTo(car);
         }
 
         @Test
         void shouldFind() {
 
             session.save(car);
+            session.flush();
             session.clear();
 
             var actualResult = session.get(Car.class, car.getId());
 
-            assertThat(actualResult).isNotNull().isEqualTo(car);
+            assertThat(actualResult).isEqualTo(car);
         }
 
         @Test
         void shouldUpdate() {
 
             session.save(car);
+            session.flush();
             session.clear();
             var car1 = session.get(Car.class, car.getId());
             car.setRegistrationNumber("2");
@@ -209,20 +184,21 @@ public class EntityIT {
             session.clear();
 
             var actualResult = session.get(Car.class, car1.getId());
-            assertThat(actualResult.getRegistrationNumber()).isNotNull().isEqualTo(car1.getRegistrationNumber());
+            assertThat(actualResult.getRegistrationNumber()).isEqualTo(car1.getRegistrationNumber());
         }
 
         @Test
         void shouldDelete() {
 
             session.save(car);
+            session.flush();
             session.clear();
-
-            session.delete(car);
+            var car1 = session.get(Car.class, car.getId());
+            session.delete(car1);
             session.flush();
             session.clear();
 
-            var actualResult = session.get(Car.class, car.getId());
+            var actualResult = session.get(Car.class, car1.getId());
             assertThat(actualResult).isNull();
         }
     }
@@ -240,10 +216,13 @@ public class EntityIT {
             session.save(car);
             session.save(driver);
             session.save(dispatcher);
+            session.save(trip);
+            session.flush();
+            session.clear();
 
-            var actualResult = session.save(trip);
+            Trip actualResult = session.get(Trip.class, trip.getId());
 
-            assertThat(actualResult).isNotNull();
+            assertThat(actualResult).isEqualTo(trip);
         }
 
         @Test
@@ -257,11 +236,12 @@ public class EntityIT {
             session.save(driver);
             session.save(dispatcher);
             session.save(trip);
+            session.flush();
             session.clear();
 
             var actualResult = session.get(Trip.class, trip.getId());
 
-            assertThat(actualResult).isNotNull().isEqualTo(trip);
+            assertThat(actualResult).isEqualTo(trip);
         }
 
         @Test
@@ -275,6 +255,7 @@ public class EntityIT {
             session.save(driver);
             session.save(dispatcher);
             session.save(trip);
+            session.flush();
             session.clear();
             var trip1 = session.get(Trip.class, trip.getId());
             trip1.setStatus(Status.COMPLETED);
@@ -284,7 +265,7 @@ public class EntityIT {
             session.clear();
 
             var actualResult = session.get(Trip.class, trip1.getId());
-            assertThat(actualResult.getStatus()).isNotNull().isEqualTo(trip1.getStatus());
+            assertThat(actualResult.getStatus()).isEqualTo(trip1.getStatus());
         }
 
         @Test
@@ -298,13 +279,15 @@ public class EntityIT {
             session.save(driver);
             session.save(dispatcher);
             session.save(trip);
+            session.flush();
             session.clear();
+            var trip1 = session.get(Trip.class, trip.getId());
 
-            session.delete(trip);
+            session.delete(trip1);
             session.flush();
             session.clear();
 
-            var actualResult = session.get(Trip.class, trip.getId());
+            var actualResult = session.get(Trip.class, trip1.getId());
             assertThat(actualResult).isNull();
         }
     }

@@ -2,9 +2,8 @@ package ru.mcdev.entity;
 
 import java.io.Serializable;
 
-public interface BaseEntity<T extends Serializable> {
+public interface BaseEntity<K extends Serializable> {
 
-    void setId(T id);
-
-    T getId();
+    void setId(K id);
+    K getId();
 }

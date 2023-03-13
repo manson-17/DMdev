@@ -1,12 +1,11 @@
 package ru.mcdev.entity;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import ru.mcdev.entity.enums.Role;
+import lombok.experimental.SuperBuilder;
 
 import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
@@ -16,21 +15,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@Entity
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString(callSuper = true)
 @EqualsAndHashCode(of = "email")
+@Entity
 @DiscriminatorValue("dispatcher")
 public class Dispatcher extends Employee {
 
-    @OneToMany(mappedBy = "dispatcher", cascade = CascadeType.DETACH)
+    @OneToMany(mappedBy = "dispatcher", cascade = CascadeType.REMOVE)
     private List<Trip> trips = new ArrayList<>();
 
-    @Builder
-    public Dispatcher(Long id, String email, String firstname, String lastname, String password, Role role, List<Trip> trips) {
-        super(id, email, firstname, lastname, password, role);
-        this.trips = trips;
+    public void addTrip(Trip trip) {
+        trips.add(trip);
+        trip.setDispatcher(this);
     }
 
 }

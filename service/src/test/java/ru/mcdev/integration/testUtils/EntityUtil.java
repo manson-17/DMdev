@@ -25,16 +25,6 @@ public class EntityUtil {
                 .build();
     }
 
-    public Car createCar() {
-        return Car.builder()
-                .model("model")
-                .brand("brand")
-                .category(Category.B)
-                .registrationNumber("1")
-                .trips(emptyList())
-                .build();
-    }
-
     public Dispatcher createDispatcher() {
         return Dispatcher.builder()
                 .email("testDispatcher@mail.com")
@@ -42,6 +32,16 @@ public class EntityUtil {
                 .lastname("Pupkin")
                 .role(Role.DISPATCHER)
                 .password("qwerty")
+                .trips(emptyList())
+                .build();
+    }
+
+    public Car createCar() {
+        return Car.builder()
+                .model("model")
+                .brand("brand")
+                .category(Category.B)
+                .registrationNumber("1")
                 .trips(emptyList())
                 .build();
     }
